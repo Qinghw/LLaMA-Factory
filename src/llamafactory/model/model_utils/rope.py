@@ -50,12 +50,14 @@ def configure_rope(config: "PretrainedConfig", model_args: "ModelArguments", is_
         if current_max_length and model_args.model_max_length > current_max_length:
             logger.info_rank0(f"Enlarge max model length from {current_max_length} to {model_args.model_max_length}.")
             setattr(config, "max_position_embeddings", model_args.model_max_length)
-            scaling_factor = float(math.ceil(model_args.model_max_length / current_max_length))
+            # scaling_factor = float(math.ceil(model_args.model_max_length / current_max_length))
+            scaling_factor = 0.1*math.log(float(math.ceil(model_args.model_max_length / current_max_length)))+1.0        #  YaRN
         else:
             logger.warning_rank0("Input length is smaller than max length. Consider increase input length.")
             scaling_factor = 1.0
     else:
-        scaling_factor = 2.0
+        # scaling_factor = 2.0
+        scaling_factor = 1.0
 
     setattr(config, "rope_scaling", {"type": model_args.rope_scaling, "factor": scaling_factor})
     logger.info_rank0(
